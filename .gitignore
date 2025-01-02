@@ -1,0 +1,34 @@
+# 二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试二进制文件
+*.test
+
+# 覆盖率测试生成的文件
+*.out
+
+# Go 特定的文件和目录
+/vendor/
+/bin/
+/pkg/
+
+# IDE 相关文件和目录
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# 依赖管理
+go.work
+
+# 日志文件
+*.log
+
+# 环境变量文件
+.env
+.env.local 
