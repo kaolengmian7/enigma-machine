@@ -11,7 +11,7 @@
 - [Enigma的工作原理](https://www.youtube.com/watch?v=J46hu4RMB5I) ⚙️ - 看不懂英文的请自行脑补
 - [Enigma的缺陷](https://www.youtube.com/watch?v=Sqpe5vZoKTo) 🔍 - 哦吼？666
 
-如果你觉得看文档太枯燥，可以去看《模仿游戏》这部电影。 🎬
+如果你觉得看文档太枯燥，可以去看[《模仿游戏》](https://movie.douban.com/subject/10463953/)这部电影。 🎬
 
 ## 如何使用 🚀
 首先，你得有个 Go 语言环境。
