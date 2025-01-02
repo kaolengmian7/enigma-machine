@@ -30,7 +30,7 @@ curl -X POST http://localhost:8080/api/encrypt \
 -d '{
     "message": "HELLO WORLD",
     "plugboard": ["AB", "CD", "EF", "GH", "IJ"],
-    "positions": [0, 0, 0]
+    "positions": [1, 5, 9]
 }'
 ```
 返回：`{"result":"YFNDZ AAEZV"}`
@@ -41,12 +41,16 @@ curl -X POST http://localhost:8080/api/encrypt \
 curl -X POST http://localhost:8080/api/decrypt \
 -H "Content-Type: application/json" \
 -d '{
-    "message": "YFNDZ AAEZV",
+    "message": "ZYRXU PZFQI",
     "plugboard": ["AB", "CD", "EF", "GH", "IJ"],
-    "positions": [0, 0, 0] 
+    "positions": [1, 5, 9] 
 }'
 ```
 返回：`{"result":"HELLO WORLD"}`
+
+> plugboard 代表 10 组飞线，上面的例子中只有 5 组，可以自行添加剩下的 5 组。(如果你理解了 enigma 的原理，应该知道字母是不能重复的🐶)
+> 
+> positions 代表三个转子的初始位置，可以自行调整，范围为[0,26)。
 
 ## 一个小请求 ⭐
 如果你觉得这个项目还不错，不妨给个 star。这年头，star 比德军的密码还难得到🐶。

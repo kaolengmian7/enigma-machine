@@ -36,9 +36,9 @@ type EnigmaMachine struct {
 func NewEnigmaMachine() *EnigmaMachine {
 	// 创建三个转子，使用历史上真实的 Enigma I 转子接线方式
 	rotors := [3]Rotor{
-		{wiring: "EKMFLGDQVZNTOWYHXUSPAIBRCJ", position: 0, notch: 16}, // Rotor I
-		{wiring: "AJDKSIRUXBLHWTMCQGZNPYFVOE", position: 0, notch: 4},  // Rotor II
-		{wiring: "BDFHJLCPRTXVZNYEIWGAKMUSQO", position: 0, notch: 21}, // Rotor III
+		{wiring: "EKMFLGDQVZNTOWYHXUSPAIBRCJ", position: 1, notch: 16}, // Rotor I
+		{wiring: "AJDKSIRUXBLHWTMCQGZNPYFVOE", position: 5, notch: 4},  // Rotor II
+		{wiring: "BDFHJLCPRTXVZNYEIWGAKMUSQO", position: 9, notch: 21}, // Rotor III
 	}
 
 	// 使用历史上的 B 反射器接线方式
@@ -60,12 +60,32 @@ func (e *EnigmaMachine) SetPlugboard(pairs []string) error {
 		return fmt.Errorf("接线板最多支持10对连接")
 	}
 
+	// 创建一个集合来跟踪已使用的字母
+	usedLetters := make(map[rune]bool)
 	e.plugboard.connections = make(map[rune]rune)
+
 	for _, pair := range pairs {
 		if len(pair) != 2 {
 			return fmt.Errorf("无效的接线对: %s", pair)
 		}
+
 		a, b := rune(pair[0]), rune(pair[1])
+
+		// 检查字母是否在A-Z范围内
+		if a < 'A' || a > 'Z' || b < 'A' || b > 'Z' {
+			return fmt.Errorf("接线对 %s 包含非法字符，只允许A-Z", pair)
+		}
+
+		// 检查字母是否已被使用
+		if usedLetters[a] || usedLetters[b] || a == b {
+			return fmt.Errorf("字母不能重复使用: %s", pair)
+		}
+
+		// 标记字母为已使用
+		usedLetters[a] = true
+		usedLetters[b] = true
+
+		// 设置接线对
 		e.plugboard.connections[a] = b
 		e.plugboard.connections[b] = a
 	}
@@ -73,10 +93,14 @@ func (e *EnigmaMachine) SetPlugboard(pairs []string) error {
 }
 
 // SetRotorPositions 设置转子初始位置
-func (e *EnigmaMachine) SetRotorPositions(positions [3]int) {
+func (e *EnigmaMachine) SetRotorPositions(positions [3]int) error {
 	for i := 0; i < 3; i++ {
-		e.rotors[i].position = positions[i] % 26
+		if positions[i] < 0 || positions[i] >= 26 {
+			return fmt.Errorf("rotor position %d is invalid: must be in range [0,25)", i+1)
+		}
+		e.rotors[i].position = positions[i]
 	}
+	return nil
 }
 
 // rotateRotors 转动转子
@@ -184,7 +208,10 @@ func handleEncrypt(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 设置转子位置
-	enigma.SetRotorPositions(req.Positions)
+	if err := enigma.SetRotorPositions(req.Positions); err != nil {
+		http.Error(w, "转子位置错误: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	// 加密消息
 	result := enigma.Encrypt(req.Message)
